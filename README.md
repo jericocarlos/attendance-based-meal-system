@@ -4,7 +4,7 @@ The integration of the Free Meal Monitoring System and Security Attendance Syste
 
 This integrated approach provides real-time monitoring, enhanced security, accurate attendance tracking, and automated meal distribution, supported by administrative controls and comprehensive reporting.
 
-## 🚀 Features
+<!-- ## 🚀 Features
 
 ### 🏠 Employee Interface
 - **RFID Tag Reading**: Instant free meal logging via RFID card scanning
@@ -243,4 +243,4 @@ For support and questions:
 - UI components from [Radix UI](https://www.radix-ui.com/)
 - Icons from [Lucide](https://lucide.dev/)
 - Styling with [Tailwind CSS](https://tailwindcss.com/)
-- Animations powered by [Framer Motion](https://www.framer.com/motion/)
+- Animations powered by [Framer Motion](https://www.framer.com/motion/) -->
