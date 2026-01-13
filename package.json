@@ -1,6 +1,6 @@
 {
-  "name": "freemeal-monitoring-system",
-  "version": "0.1.0",
+  "name": "attendance-based-meal-system",
+  "version": "0.2.0",
   "private": true,
   "scripts": {
     "dev": "next dev --turbopack",

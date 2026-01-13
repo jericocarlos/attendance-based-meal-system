@@ -1,8 +1,8 @@
 import './globals.css';
 
 export const metadata = {
-  title: 'Free Meal Monitoring System',
-  description: 'Track employee meal claims using RFID technology',
+  title: 'Attendance-Based Meal System',
+  description: 'This project integrates a free meal monitoring system with a security attendance system to automate meal eligibility verification using secure attendance records, ensuring accuracy, transparency, and efficient meal distribution.',
 };
 
 export default function RootLayout({ children }) {

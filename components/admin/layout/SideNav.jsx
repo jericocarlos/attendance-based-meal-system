@@ -207,9 +207,9 @@ export default function SideNav({ collapsed }) {
                 transition={{ duration: 0.2 }}
                 className="text-center text-xs text-slate-400"
               >
-                <p className="font-semibold">Free Meal Monitoring System</p>
+                <p className="font-semibold">Attendance-Based Meal System</p>
                 <p>&copy; {new Date().getFullYear()}</p>
-                <p className="mt-1 text-blue-400">v1.0.0</p>
+                <p className="mt-1 text-blue-400">v2.0.0</p>
               </motion.div>
             )}
           </AnimatePresence>
