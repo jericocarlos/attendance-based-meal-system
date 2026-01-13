@@ -1,6 +1,8 @@
-# FREE MEAL MONITORING SYSTEM
+# ATTENDANCE-BASED MEAL SYSTEM
 
-A modern, comprehensive free meal monitoring system built with Next.js that uses RFID technology for seamless employee claiming free meal tracking. The system features a beautiful, responsive interface with real-time free meal monitoring, administrative controls, and comprehensive reporting capabilities.
+The integration of the Free Meal Monitoring System and Security Attendance System enables a unified platform where employee attendance data is securely validated and directly used to determine free meal eligibility. By leveraging RFID-based attendance verification, the system ensures that only authorized and present employees can claim meals, preventing misuse and improving operational efficiency.
+
+This integrated approach provides real-time monitoring, enhanced security, accurate attendance tracking, and automated meal distribution, supported by administrative controls and comprehensive reporting.
 
 ## 🚀 Features
 
@@ -68,8 +70,8 @@ A modern, comprehensive free meal monitoring system built with Next.js that uses
 
 1. **Clone the repository**
    ```bash
-   git clone https://github.com/your-username/freemeal-monitoring-system.git
-   cd freemeal-monitoring-system
+   git clone https://github.com/jericocarlos/attendance-based-meal-system.git
+   cd attendance-based-meal-system
    ```
 
 2. **Install dependencies**
