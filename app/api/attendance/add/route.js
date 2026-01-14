@@ -38,6 +38,7 @@ export async function POST(request) {
           e.photo,
           e.status,
           'employee' AS person_type,
+          e.is_enabled,
           e.meal_count
       FROM employees e
       LEFT JOIN departments d ON e.department_id = d.id
@@ -55,6 +56,7 @@ export async function POST(request) {
           i.photo,
           i.status,
           'intern' AS person_type,
+          i.is_enabled,
           null as meal_count
       FROM interns i
       LEFT JOIN departments d ON i.department_id = d.id
@@ -72,6 +74,7 @@ export async function POST(request) {
           t.photo,
           t.status,
           'trainee' AS person_type,
+          t.is_enabled,
           null as meal_count
       FROM trainees t
       LEFT JOIN departments d ON t.department_id = d.id
@@ -156,8 +159,20 @@ export async function POST(request) {
     }
 
     // Insert if needed
-    if (insertLogQuery) {
-      await executeQuery({ query: insertLogQuery, values: insertLogValues });
+    // Proceed only if enabled
+    if (employee.is_enabled === 1) {
+      if (insertLogQuery) {
+        await executeQuery({
+          query: insertLogQuery,
+          values: insertLogValues,
+        });
+      }
+    } else {
+      const errorMessage = "Free meal counter is disabled. Cannot claim meal.";
+      return NextResponse.json(
+        { error: errorMessage },
+        { status: 400 }
+      );
     }
 
     // Update meal_count or last_active as before
