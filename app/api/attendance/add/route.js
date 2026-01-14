@@ -169,6 +169,7 @@ export async function POST(request) {
       }
     } else {
       const errorMessage = "Free meal counter is disabled. Cannot claim meal.";
+      console.log("❌", errorMessage);
       return NextResponse.json(
         { error: errorMessage },
         { status: 400 }
