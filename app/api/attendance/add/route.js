@@ -89,7 +89,7 @@ export async function POST(request) {
 
     if (!employee) {
       return NextResponse.json(
-        { error: 'Person not found for provided identifier.' },
+        { error: 'Person not found on Qualified Free Meal List.' },
         { status: 404 }
       );
     }
