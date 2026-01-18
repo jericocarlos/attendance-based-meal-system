@@ -89,7 +89,7 @@ export async function POST(request) {
 
     if (!employee) {
       return NextResponse.json(
-        { error: 'Person not found on Qualified Free Meal List.Kindly contact HR Department for assistance for employee or Recruitment Department for assistance for trainees or ojts.' },
+        { error: 'Person not found on Qualified Free Meal List.Kindly contact HR Department for assistance.' },
         { status: 404 }
       );
     }
