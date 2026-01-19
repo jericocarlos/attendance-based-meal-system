@@ -3,6 +3,7 @@ import nodemailer from 'nodemailer';
 import { getServerSession } from 'next-auth/next';
 import { authOptions } from '@/app/api/auth/[...nextauth]/route';
 import { generateFreemealCsv } from '@/lib/reports';
+import { executeQuery } from '@/lib/db';
 
 export async function POST(req) {
   try {
@@ -75,7 +76,13 @@ export async function POST(req) {
       ]
     });
 
-    return NextResponse.json({ success: true, message: 'Report emailed successfully' });
+    // Update meal_count to 7 for all employees
+    await executeQuery({
+      query: 'UPDATE employees SET meal_count = 7',
+      values: []
+    });
+
+    return NextResponse.json({ success: true, message: 'Report emailed successfully and meal counts updated' });
   } catch (error) {
     console.error('Failed to send free meal report via email:', error);
     return NextResponse.json({ error: 'Failed to send free meal report' }, { status: 500 });
