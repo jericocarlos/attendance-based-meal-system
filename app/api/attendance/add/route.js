@@ -158,6 +158,26 @@ export async function POST(request) {
       console.log("❌", nextLogType);
     }
 
+    // Check if claiming for Sunday after Monday 12:00 PM (when report is sent)
+    const claimDate = new Date(timeForQueries);
+    const dayOfWeek = claimDate.getDay(); // 0 = Sunday, 1 = Monday, etc.
+    
+    if (dayOfWeek === 0) { // Claiming for a Sunday
+      const now = new Date();
+      const nextMonday = new Date(claimDate);
+      nextMonday.setDate(nextMonday.getDate() + 1); // Monday after the Sunday
+      nextMonday.setHours(12, 0, 0, 0); // Monday 12:00 PM
+      
+      if (now >= nextMonday) {
+        const errorMessage = "Free meal cannot be claimed due to report for previous week already sent to HR.";
+        console.log("❌", errorMessage);
+        return NextResponse.json(
+          { error: errorMessage },
+          { status: 400 }
+        );
+      }
+    }
+
     // Insert if needed
     // Proceed only if enabled
     if (employee.is_enabled === 1) {
@@ -187,7 +207,7 @@ export async function POST(request) {
     }else if (employee.person_type === 'employee' && employee.meal_count == 0) {
       // throw error if meal_count is zero
       return NextResponse.json(
-        { error: 'Your free meal reached its limit. Wait for your free meal to be refreshed.' },
+        { error: 'Your free meal reached its limit. Wait for your free meal to be refreshed on monday 12 noon.' },
         { status: 400 }
       );
     }else {
