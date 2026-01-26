@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import { executeQuery } from '@/lib/db';
+import { executeQuery, attendancePool, freemealPool } from '@/lib/db';
 
 export async function POST(request) {
   try {
@@ -111,6 +111,8 @@ export async function POST(request) {
       query: latestLogQuery,
       values: [employee.ashima_id, timeForQueries],
     });
+    // const freemealConn = await freemealPool.getConnection();
+    const attendanceConn = await attendancePool.getConnection();
 
     let nextLogType = "CLAIMED";
     let insertLogQuery = "";
@@ -135,12 +137,17 @@ export async function POST(request) {
           VALUES (DATE(?), ?, 'CLAIMED', ?, ?)
         `;
         insertLogValues = [timeParamRaw, employee.ashima_id, timeParamRaw, employee.person_type];
+
+        await attendanceConn.ping();
+        console.log('SAS DB connected 1');
       } else {
         insertLogQuery = `
           INSERT INTO freemeal_logs (date_claimed, ashima_id, log_type, time_claimed, meal_type)
           VALUES (CURDATE(), ?, 'CLAIMED', NOW(), ?)
         `;
         insertLogValues = [employee.ashima_id, employee.person_type];
+        await attendanceConn.ping();
+        console.log('SAS DB connected 2');
       }
 
       console.log("✅ Free meal claimed for the target date.");
@@ -153,9 +160,13 @@ export async function POST(request) {
       `;
       await executeQuery({ query: updateQuery, values: [latestLog.id] });
       console.log("ℹ️ Meal already claimed earlier on this date. Status updated.");
+      await attendanceConn.ping();
+      console.log('SAS DB connected 3');
     } else if (latestLog.log_type === "CLAIMED ALREADY" && isSameDay) {
       nextLogType = "Meal already claimed on that date. You cannot claim again.";
       console.log("❌", nextLogType);
+      await attendanceConn.ping();
+      console.log('SAS DB connected 4');
     }
 
     // Check if claiming for Sunday after Monday 12:00 PM (when report is sent)
