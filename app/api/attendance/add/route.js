@@ -111,7 +111,7 @@ export async function POST(request) {
       query: latestLogQuery,
       values: [employee.ashima_id, timeForQueries],
     });
-    // const freemealConn = await freemealPool.getConnection();
+    const freemealConn = await freemealPool.getConnection();
     const attendanceConn = await attendancePool.getConnection();
 
     let nextLogType = "CLAIMED";
@@ -137,7 +137,6 @@ export async function POST(request) {
           VALUES (DATE(?), ?, 'CLAIMED', ?, ?)
         `;
         insertLogValues = [timeParamRaw, employee.ashima_id, timeParamRaw, employee.person_type];
-
         await attendanceConn.ping();
         console.log('SAS DB connected 1');
       } else {
@@ -189,23 +188,83 @@ export async function POST(request) {
       }
     }
 
-    // Insert if needed
-    // Proceed only if enabled
-    if (employee.is_enabled === 1) {
-      if (insertLogQuery) {
-        await executeQuery({
-          query: insertLogQuery,
-          values: insertLogValues,
-        });
-      }
-    } else {
-      const errorMessage = "Free meal counter is disabled. Cannot claim meal.";
-      console.log("❌", errorMessage);
-      return NextResponse.json(
-        { error: errorMessage },
-        { status: 400 }
+    // ******************************* Attendance Check Start ************************************** //
+    try {
+      await attendanceConn.beginTransaction();
+      // await freemealConn.beginTransaction();
+
+      // 🔍 Check attendance first
+      const [rows] = await attendanceConn.execute(
+        `
+        SELECT 1
+        FROM attendance_logs
+        WHERE ashima_id = ?
+          AND DATE(in_time) = ?
+        LIMIT 1
+        `,
+        [employee.ashima_id, timeParamRaw]
       );
+
+      if (rows.length === 0) {
+        const errorMessage = "No attendance record found for the target date. Free meal can only be claimed if you have attended.";
+        console.log("❌", errorMessage);
+        return NextResponse.json(
+          { error: errorMessage },
+          { status: 400 }
+        );
+      }else {
+        console.log("✅ Attendance verified for the target date.");
+        // Insert if needed
+        // Proceed only if enabled & has attendance
+        if (employee.is_enabled === 1) {
+          if (insertLogQuery) {
+            await executeQuery({
+              query: insertLogQuery,
+              values: insertLogValues,
+            });
+          }
+        } else {
+          const errorMessage = "Free meal counter is disabled. Cannot claim meal.";
+          console.log("❌", errorMessage);
+          return NextResponse.json(
+            { error: errorMessage },
+            { status: 400 }
+          );
+        }
+      }
+
+      await attendanceConn.commit();
+      // await freemealConn.commit();
+
+    } catch (err) {
+      await attendanceConn.rollback();
+      // await freemealConn.rollback();
+      throw err;
+    } finally {
+      attendanceConn.release();
+      // freemealConn.release();
     }
+
+    // ******************************* Attendance Check End ************************************** //
+
+    // // Insert if needed
+    // // Proceed only if enabled & has attendance
+    // if (employee.is_enabled === 1 && rows[0].attendance_count > 0) {
+    //   if (insertLogQuery) {
+    //     await executeQuery({
+    //       query: insertLogQuery,
+    //       values: insertLogValues,
+    //     });
+    //   }
+    // } else {
+    //   const errorMessage = "Free meal counter is disabled. Cannot claim meal.";
+    //   console.log("❌", errorMessage);
+    //   return NextResponse.json(
+    //     { error: errorMessage },
+    //     { status: 400 }
+    //   );
+    // }
+
 
     // Update meal_count or last_active as before
     if (employee.person_type === 'employee' && nextLogType === 'CLAIMED' && employee.meal_count > 0) {
